@@ -64,18 +64,41 @@
   }
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
+/* Tablet Responsive Design */
+@media (max-width: 1024px) {
   .glossary-popup {
     max-width: 250px;
-    padding: 10px 14px;
+    padding: 10px 12px;
+    font-size: 12px;
   }
   
   .popup-header {
     font-size: 13px;
+    margin-bottom: 5px;
   }
   
   .popup-content {
     font-size: 12px;
+    line-height: 1.3;
+  }
+  
+  .glossary-term {
+    padding: 1px 3px;
+    border-radius: 3px;
+  }
+}
+
+@media (max-width: 768px) {
+  .glossary-popup {
+    max-width: 200px;
+    padding: 8px 10px;
+  }
+  
+  .popup-header {
+    font-size: 12px;
+  }
+  
+  .popup-content {
+    font-size: 11px;
   }
 }

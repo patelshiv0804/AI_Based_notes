@@ -263,72 +263,62 @@
   background: rgba(0, 0, 0, 0.2);
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
+  .notes-list {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .notes-header {
+    padding: 15px 20px;
+    flex-shrink: 0;
+  }
+  
+  .notes-header h2 {
+    font-size: 16px;
+  }
+  
   .notes-container {
-    padding: 5px;
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 12px;
+    padding: 10px 20px;
   }
   
   .note-item {
-    padding: 12px;
-    margin-bottom: 8px;
+    min-width: 200px;
+    max-width: 200px;
+    height: 170px;
+    flex-shrink: 0;
+    margin-bottom: 0;
+    /* height: fit-content; */
   }
   
   .note-title {
-    font-size: 15px;
+    font-size: 14px;
   }
   
   .note-preview {
     font-size: 13px;
+    -webkit-line-clamp: 2;
   }
-}
-
-/* Tablet-only: horizontal notes list (>=768px and <1024px) */
-@media (min-width: 768px) and (max-width: 1023px) {
-  .notes-list {
-    height: auto;
-    background: transparent;
+  
+  /* Horizontal scrollbar */
+  .notes-container::-webkit-scrollbar {
+    height: 4px;
   }
-  .notes-header {
-    padding: 12px 12px 8px 12px;
-    background: transparent;
-    border-bottom: none;
+  
+  .notes-container::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 2px;
   }
-  .notes-container {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    padding: 8px 12px 12px 12px;
-    -webkit-overflow-scrolling: touch;
-    background: transparent;
+  
+  .notes-container::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
   }
-  .notes-container::-webkit-scrollbar { height: 6px; }
-  .note-item { flex: 0 0 auto; min-width: 240px; max-width: 280px; margin: 0; }
-}
-
-/* Tablet horizontal notes row (>=768px and <1024px) */
-@media (min-width: 768px) and (max-width: 1023px) {
-  .notes-list {
-    height: auto;
-    background: transparent;
-  }
-  .notes-header {
-    padding: 12px 12px 8px 12px;
-    background: transparent;
-    border-bottom: none;
-  }
-  .notes-container {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    padding: 8px 12px 12px 12px;
-    -webkit-overflow-scrolling: touch;
-    background: transparent;
-  }
-  .notes-container::-webkit-scrollbar { height: 6px; }
-  .note-item { min-width: 240px; max-width: 280px; margin: 0; flex: 0 0 auto; }
 }

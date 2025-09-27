@@ -245,39 +245,83 @@
   transform: translateY(-2px) scale(1.04);
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .editor-header {
+
+/* Tablet responsive for editor */
+@media (max-width: 1024px) {
+  .rich-text-editor {
+    height: 100%;
+    display: flex;
     flex-direction: column;
-    gap: 15px;
-    padding: 20px;
-  }
-  
-  .note-title-input {
-    margin-right: 0;
-    width: 100%;
   }
   
   .editor-toolbar {
-    padding: 15px 20px;
-    justify-content: center;
+    padding: 10px 15px;
+    flex-wrap: wrap;
+    gap: 8px;
+    flex-shrink: 0;
   }
   
-  .toolbar-group {
-    padding: 0 10px;
+  .toolbar-btn {
+    padding: 6px 8px;
   }
   
-  .editor-area {
+  .note-title-input {
+    font-size: 18px;
+    padding: 12px 15px;
+  }
+  
+  .note-editor {
+    flex: 1;
     padding: 20px;
     font-size: 15px;
+    max-width: none;
+    overflow-y: auto;
+    min-height: 0;
   }
   
-  .encryption-overlay {
-    margin: 20px;
+  .font-size-select {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+  
+  .grammar-check {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .editor-toolbar {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+  
+  .toolbar-btn {
+    padding: 5px 6px;
+  }
+  
+  .note-title-input {
+    font-size: 18px;
+    padding: 8px 10px;
+  }
+  
+  .note-editor {
+    padding: 15px;
+    font-size: 14px;
+  }
+  
+  .encrypted-editor .encryption-overlay {
+    max-width: 90%;
     padding: 30px 20px;
   }
   
   .password-input-group {
     flex-direction: column;
+    gap: 8px;
+  }
+  
+  .verify-btn {
+    width: 100%;
+    justify-content: center;
   }
 }

@@ -384,18 +384,75 @@
     font-size: 13px;
   }
 }
-
-@media (max-width: 768px) {
+/* Tablet responsive for AI panel */
+@media (max-width: 1024px) {
+  .ai-panel {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: hidden;
+    overflow-x: auto;
+  }
+  
   .panel-header {
-    padding: 15px;
+    padding: 15px 20px;
+    flex-shrink: 0;
   }
   
   .panel-content {
-    padding: 15px;
+    flex: 1;
+    padding: 15px 20px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 0;
+    width: 350px;
+  }
+  
+  .ai-section {
+    margin-bottom: 15px;
+    padding: 12px;
+    overflow: hidden;
+    width: fit-content;
+  }
+  
+  .section-header h4 {
+    font-size: 14px;
+  }
+  
+  .summary-content p {
+    font-size: 13px;
+  }
+  
+  .glossary-items {
+    max-height: 80px;
+  }
+  
+  .ai-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  
+  .language-select {
+    padding: 8px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .ai-panel {
+    height: 200px;
+  }
+  
+  .panel-content {
+    padding: 10px;
   }
   
   .ai-section {
     padding: 12px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
+  }
+  
+  .glossary-items {
+    max-height: 100px;
   }
 }
