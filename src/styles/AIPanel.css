@@ -1,4 +1,5 @@
 .ai-panel {
+  width: 350px; /* Fixed width for better appearance */
   height: 100%;
   display: flex;
   flex-direction: column;

@@ -32,12 +32,14 @@ function AIPanel({ note, onUpdateNote }) {
 	];
 
 	useEffect(() => {
-		generateAISuggestions();
+		if (!note.isEncrypted) {
+			generateAISuggestions();
+		}
 		// eslint-disable-next-line
-	}, [note.id]);
+	}, [note.id, note.isEncrypted]);
 
 	const generateAISuggestions = async () => {
-		if (note.isEncrypted) return;
+		if (note.isEncrypted) return; // Ensure AI features are disabled for encrypted notes
 		setIsGenerating(true);
 		const content = note.content.replace(/<[^>]*>/g, '');
 		try {

@@ -29,8 +29,6 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
 		}
 	}, [note.id, note.isEncrypted]);
 
-	// ...existing code...
-
 	if (note.isEncrypted && !isPasswordVisible) {
 		return (
 			<div className="encrypted-editor" style={{display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%'}}>
@@ -51,12 +49,22 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
 							onClick={() => {
 								if (password === note.password) {
 									setIsPasswordVisible(true);
+									onUpdateNote({ ...note, isEncrypted: false }); // Update note state to unlocked
+
 									// Restore note content in editor
 									setTimeout(() => {
 										if (editorRef.current) {
 											editorRef.current.innerHTML = note.content;
 										}
 									}, 0);
+
+									// Trigger AI analysis for unlocked note
+									AIService.analyzeNote(note.content).then((analysis) => {
+										console.log('AI Analysis:', analysis);
+										// You can update the UI or state with the analysis results here
+									}).catch((error) => {
+										console.error('AI Analysis failed:', error);
+									});
 								} else {
 									alert('Incorrect password!');
 								}

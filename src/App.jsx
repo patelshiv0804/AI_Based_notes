@@ -6,6 +6,7 @@ import AIPanel from "./components/AIPanel.jsx";
 import EncryptionDialog from "./components/EncryptionDialog.jsx";
 import StorageService from "./services/StorageService.js";
 import AIService from "./services/AIService.js";
+import logoImage from "./Logo/neura_notes_logo.png"; // Import the provided logo image
 import "./styles/App.css";
 
 function App() {
@@ -114,10 +115,13 @@ function App() {
                 display: "flex",
                 alignItems: "center",
                 gap: 12,
-                color: "#667eea",
               }}
             >
-              <Brain size={32} />
+              <img
+                src={logoImage}
+                alt="Neura Notes Logo"
+                style={{ width: 45, height: 45 }}
+              />
               <h1
                 style={{
                   fontSize: 28,
