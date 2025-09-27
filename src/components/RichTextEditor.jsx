@@ -110,8 +110,9 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
 					</select>
 				</span>
 				<span style={{height: 32, width: 1, background: '#e5e7eb', margin: '0 12px'}}></span>
-				<button style={{background: '#10b981', color: 'white', borderRadius: 6, padding: '8px 24px', border: 'none', fontWeight: 500}}>Grammar Check</button>
+				{/* <button style={{background: '#10b981', color: 'white', borderRadius: 6, padding: '8px 24px', border: 'none', fontWeight: 500}}>Grammar Check</button> */}
 			</div>
+			
 			<GlossaryHighlighter>
 				<div
 					ref={editorRef}

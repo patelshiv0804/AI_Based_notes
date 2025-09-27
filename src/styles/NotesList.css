@@ -264,6 +264,20 @@
 }
 
 @media (max-width: 1024px) {
+
+  .note-actions {
+    opacity: 1;
+  }
+
+  .action-btn:hover {
+    transform: scale(1.05); /* softer zoom */
+  }
+
+  .action-btn.delete:hover {
+    transform: translateY(-1px) scale(1.02); /* gentler lift */
+    box-shadow: 0 2px 8px rgba(220,38,38,0.12);
+  }
+
   .notes-list {
     height: 100%;
     display: flex;
@@ -320,5 +334,10 @@
   .notes-container::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.2);
     border-radius: 2px;
+  }
+
+  .action-btn {
+    padding: 4px;       /* reduced padding */
+    border-radius: 4px; /* slightly sharper corners */
   }
 }
