@@ -37,6 +37,7 @@ function AIPanel({ note, onUpdateNote }) {
 	}, [note.id]);
 
 	const generateAISuggestions = async () => {
+		if (note.isEncrypted) return;
 		setIsGenerating(true);
 		const content = note.content.replace(/<[^>]*>/g, '');
 		try {
@@ -56,6 +57,7 @@ function AIPanel({ note, onUpdateNote }) {
 
 	const applySuggestedTags = async () => {
 		// Make a copy of the current note and update its tags
+		if (note.isEncrypted) return;
 		const updatedNote = { 
 			...note,
 			tags: [...(Array.isArray(suggestedTags) ? suggestedTags : [])],
@@ -67,6 +69,7 @@ function AIPanel({ note, onUpdateNote }) {
 	};
 
 	const translateNote = async () => {
+		if (note.isEncrypted) return;
 		if (!note.content) return;
 		
 		setIsGenerating(true);
@@ -90,6 +93,30 @@ function AIPanel({ note, onUpdateNote }) {
 		}
 		setIsGenerating(false);
 	};
+
+	if (note.isEncrypted) {
+		return (
+			<div className="ai-panel" style={{overflowY: 'auto'}}>
+				<div className="panel-header">
+					<div className="panel-title">
+						<Brain size={24} />
+						<h3>AI Assistant</h3>
+					</div>
+				</div>
+				<div className="panel-content">
+					<div className="ai-section disabled-section">
+						<div className="section-header">
+							<FileText size={20} />
+							<h4>Encrypted Note</h4>
+						</div>
+						<div className="disabled-content">
+							<p>AI features are not available for encrypted notes. Unlock the note to access AI assistance.</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		);
+	}
 
 
 
@@ -125,7 +152,7 @@ function AIPanel({ note, onUpdateNote }) {
 							<button
 								onClick={generateAISuggestions}
 								className="ai-btn"
-								disabled={isGenerating}
+								disabled={isGenerating ||note.isEncrypted}
 							>
 								Generate Summary
 							</button>
@@ -153,7 +180,7 @@ function AIPanel({ note, onUpdateNote }) {
 								<button
 									onClick={applySuggestedTags}
 									className="ai-btn"
-									disabled={isGenerating || JSON.stringify(note.tags) === JSON.stringify(suggestedTags)}
+									disabled={isGenerating || note.isEncrypted || JSON.stringify(note.tags) === JSON.stringify(suggestedTags)}
 								>
 									{JSON.stringify(note.tags) === JSON.stringify(suggestedTags) ? 'Tags Applied' : 'Apply Tags'}
 								</button>
@@ -256,7 +283,7 @@ function AIPanel({ note, onUpdateNote }) {
 							<button
 								onClick={translateNote}
 								className="ai-btn"
-								disabled={isGenerating}
+								disabled={isGenerating || note.isEncrypted}
 							>
 								Translate Note
 							</button>
