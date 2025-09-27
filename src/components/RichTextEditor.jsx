@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, Type, Shield, Save, Eye, EyeOff } from 'lucide-react';
+import { Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, AlignJustify, Type, Shield, Save, Eye, EyeOff, List, ListOrdered } from 'lucide-react';
 import StorageService from '../services/StorageService.js';
 import AIService from '../services/AIService.js';
 import GlossaryHighlighter from './GlossaryHighlighter.jsx';
@@ -10,6 +10,9 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
 	const [isPasswordVisible, setIsPasswordVisible] = useState(!note.isEncrypted);
 	const [password, setPassword] = useState('');
 	const [fontSize, setFontSize] = useState('16');
+	const [wordCount, setWordCount] = useState(0);
+	const [charCount, setCharCount] = useState(0);
+	const [readingTime, setReadingTime] = useState(0);
 	const editorRef = useRef(null);
 	const titleRef = useRef(null);
 
@@ -28,6 +31,40 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
 			editorRef.current.innerHTML = sanitizeDirectionalMarks(note.content);
 		}
 	}, [note.id, note.isEncrypted]);
+
+	const calculateMetrics = (content) => {
+		const plainText = content.replace(/<[^>]*>/g, '').trim();
+		const words = plainText.split(/\s+/).filter(word => word.length > 0);
+		setWordCount(words.length);
+		setCharCount(plainText.length);
+		setReadingTime(Math.ceil(words.length / 200)); // Assuming 200 words per minute
+	};
+
+	useEffect(() => {
+		if (editorRef.current) {
+			calculateMetrics(editorRef.current.innerHTML);
+		}
+	}, [note.content]);
+
+	// Update metrics dynamically as user types
+	const handleInput = () => {
+		if (!editorRef.current) return;
+		const sanitized = sanitizeDirectionalMarks(editorRef.current.innerHTML);
+		if (sanitized !== editorRef.current.innerHTML) {
+			editorRef.current.innerHTML = sanitized;
+			// Move caret to end after sanitizing
+			const range = document.createRange();
+			range.selectNodeContents(editorRef.current);
+			range.collapse(false);
+			const sel = window.getSelection();
+			if (sel) {
+				sel.removeAllRanges();
+				sel.addRange(range);
+			}
+		}
+		onUpdateNote({ ...note, content: sanitized });
+		calculateMetrics(sanitized);
+	};
 
 	if (note.isEncrypted && !isPasswordVisible) {
 		return (
@@ -96,18 +133,19 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
 					<Shield size={24} />
 				</button>
 			</div>
-			<div className="editor-toolbar" style={{display: 'flex', alignItems: 'center', gap: 16, padding: '24px 32px', background: '#f8fafc', borderBottom: '1px solid #e5e7eb'}}>
+			<div className="editor-toolbar" style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '24px 32px', background: '#f8fafc', borderBottom: '1px solid #e5e7eb' }}>
 				<button onClick={() => document.execCommand('bold')}><Bold size={16} /></button>
 				<button onClick={() => document.execCommand('italic')}><Italic size={16} /></button>
 				<button onClick={() => document.execCommand('underline')}><Underline size={16} /></button>
-				<span style={{height: 32, width: 1, background: '#e5e7eb', margin: '0 12px'}}></span>
+				<span style={{ height: 32, width: 1, background: '#e5e7eb', margin: '0 12px' }}></span>
 				<button onClick={() => document.execCommand('justifyLeft')}><AlignLeft size={16} /></button>
 				<button onClick={() => document.execCommand('justifyCenter')}><AlignCenter size={16} /></button>
 				<button onClick={() => document.execCommand('justifyRight')}><AlignRight size={16} /></button>
-				<span style={{height: 32, width: 1, background: '#e5e7eb', margin: '0 12px'}}></span>
-				<span style={{display: 'flex', alignItems: 'center', gap: 8}}>
+				<button onClick={() => document.execCommand('justifyFull')}><AlignJustify size={16} /></button>
+				<span style={{ height: 32, width: 1, background: '#e5e7eb', margin: '0 12px' }}></span>
+				<span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
 					<Type size={16} />
-					<select value={fontSize} onChange={e => setFontSize(e.target.value)} style={{padding: '6px 12px', borderRadius: 6, border: '1px solid #e5e7eb'}}>
+					<select value={fontSize} onChange={e => setFontSize(e.target.value)} style={{ padding: '6px 12px', borderRadius: 6, border: '1px solid #e5e7eb' }}>
 						<option value="8">8px</option>
 						<option value="10">10px</option>
 						<option value="12">12px</option>
@@ -117,8 +155,9 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
 						<option value="20">20px</option>
 					</select>
 				</span>
-				<span style={{height: 32, width: 1, background: '#e5e7eb', margin: '0 12px'}}></span>
-				{/* <button style={{background: '#10b981', color: 'white', borderRadius: 6, padding: '8px 24px', border: 'none', fontWeight: 500}}>Grammar Check</button> */}
+				<span style={{ height: 32, width: 1, background: '#e5e7eb', margin: '0 12px' }}></span>
+				<button onClick={() => document.execCommand('insertOrderedList')}><ListOrdered size={16} /></button>
+				<button onClick={() => document.execCommand('insertUnorderedList')}><List size={16} /></button>
 			</div>
 			
 			<GlossaryHighlighter>
@@ -128,26 +167,15 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
 					dir="ltr"
 					contentEditable={(!note.isEncrypted || isPasswordVisible)}
 					style={{ fontSize: `${fontSize}px`, padding: '32px', direction: 'ltr', unicodeBidi: 'plaintext', textAlign: 'left', maxWidth: '52vw' }}
-					onInput={() => {
-						if (!editorRef.current) return;
-						const sanitized = sanitizeDirectionalMarks(editorRef.current.innerHTML);
-						if (sanitized !== editorRef.current.innerHTML) {
-							editorRef.current.innerHTML = sanitized;
-							// Move caret to end after sanitizing
-							const range = document.createRange();
-							range.selectNodeContents(editorRef.current);
-							range.collapse(false);
-							const sel = window.getSelection();
-							if (sel) {
-								sel.removeAllRanges();
-								sel.addRange(range);
-							}
-						}
-						onUpdateNote({ ...note, content: sanitized });
-					}}
+					onInput={handleInput}
 					suppressContentEditableWarning={true}
 				></div>
 			</GlossaryHighlighter>
+			<div className="editor-metrics" style={{ padding: '10px', background: '#f8fafc', borderTop: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#6b7280' }}>
+				<span>Words: {wordCount}</span>
+				<span>Characters: {charCount}</span>
+				<span>Reading Time: {readingTime} min</span>
+			</div>
 		</div>
 	);
 }
