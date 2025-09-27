@@ -130,7 +130,7 @@ function App() {
                   margin: 0,
                 }}
               >
-                AI Notes
+                Neura Notes
               </h1>
             </div>
             <div
