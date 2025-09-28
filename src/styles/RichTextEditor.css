@@ -1,12 +1,11 @@
 .rich-text-editor {
   display: flex;
   flex-direction: column;
-  height: 100%; /* fill available vertical space so inner editor can scroll */
+  height: 100%; 
   min-height: 0; /* allow flex children to shrink and enable scrolling */
   background: white;
 }
 
-/* Ensure parent layout containers allow flex children to scroll when used alongside this stylesheet */
 .top-editor-section,
 .editor-section,
 .content-area {
@@ -74,6 +73,15 @@
   flex-wrap: wrap;
 }
 
+.editor-toolbar--large {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 32px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e5e7eb;
+}
+
 .toolbar-group {
   display: flex;
   align-items: center;
@@ -112,6 +120,13 @@
   border-color: #667eea;
 }
 
+.toolbar-separator {
+  height: 32px;
+  width: 1px;
+  background: #e5e7eb;
+  margin: 0 12px;
+}
+
 .font-size-control {
   display: flex;
   align-items: center;
@@ -119,12 +134,9 @@
 }
 
 .font-size-select {
-  padding: 6px 10px;
-  border: 1px solid #d1d5db;
+  padding: 6px 12px;
   border-radius: 6px;
-  font-size: 14px;
-  background: white;
-  cursor: pointer;
+  border: 1px solid #e5e7eb;
 }
 
 .grammar-check {
@@ -143,13 +155,13 @@
 .editor-content {
   flex: 1;
   position: relative;
-  overflow-y: auto; /* Ensure vertical scrolling */
-  max-height: 100%; /* Prevent overflow beyond parent */
+  overflow-y: auto; 
+  max-height: 100%;
 }
 
 .editor-area {
   width: 100%;
-  height: auto; /* Adjust height dynamically */
+  height: auto; 
   padding: 30px;
   border: none;
   outline: none;
@@ -158,17 +170,19 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
   color: #1f2937;
   background: white;
-  overflow-y: auto; /* Ensure scrolling within the editor area */
+  overflow-y: auto;
 }
 
-/* Ensure contenteditable editor text is not reversed */
 .note-editor {
   direction: ltr !important;
   unicode-bidi: plaintext !important;
   text-align: left !important;
-  flex: 1 1 auto; /* allow the editor to grow/shrink inside the column layout */
-  overflow-y: auto; /* enable inner scrolling for long content */
-  min-height: 0; /* allow proper flexbox overflow behavior */
+  flex: 1 1 auto; 
+  overflow-y: auto; 
+  min-height: 0;
+  padding: 32px;
+  max-width: 52vw;
+  height: 100vh;
 }
 
 .editor-area:focus {
@@ -194,7 +208,7 @@
   padding: 40px;
   background: white;
   border-radius: 20px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(102,126,234,0.10);
 }
 
 .encryption-icon {
@@ -203,22 +217,22 @@
 }
 
 .encryption-overlay h3 {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 700;
   color: #1f2937;
-  margin: 0 0 10px 0;
+  margin-bottom: 12px;
 }
 
 .encryption-overlay p {
   color: #6b7280;
-  margin: 0 0 30px 0;
-  line-height: 1.6;
+  margin-bottom: 32px;
+  font-size: 16px;
 }
 
 .password-input-group {
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 12px;
+  margin-top: 0;
 }
 
 .password-input {
@@ -234,6 +248,14 @@
   outline: none;
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.unlock-password-input {
+  flex: 1;
+  padding: 14px 18px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 16px;
 }
 
 .verify-btn {
@@ -257,6 +279,72 @@
   transform: translateY(-2px) scale(1.04);
 }
 
+.note-title-edit-btn {
+  margin-left: 8px;
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #6b7280;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 150ms ease, transform 120ms ease;
+}
+
+.note-title-edit-btn svg path {
+  transition: stroke 150ms ease;
+}
+
+.note-title-edit-btn:hover {
+  background: rgba(102, 126, 234, 0.08); /* light theme accent */
+  transform: translateY(-2px);
+}
+
+.note-title-edit-btn:hover svg path {
+  stroke: #667eea; /* theme blue */
+}
+
+.note-title-edit-btn:focus {
+  outline: 2px solid rgba(102,126,234,0.18);
+  outline-offset: 2px;
+}
+
+.editor-top-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+}
+
+.encrypt-toggle {
+  margin-left: 16px;
+  padding: 12px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+}
+
+/* Editor metrics */
+.editor-metrics {
+  padding: 10px;
+  background: #f8fafc;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.fs-8 { font-size: 8px !important; }
+.fs-10 { font-size: 10px !important; }
+.fs-12 { font-size: 12px !important; }
+.fs-14 { font-size: 14px !important; }
+.fs-16 { font-size: 16px !important; }
+.fs-18 { font-size: 18px !important; }
+.fs-20 { font-size: 20px !important; }
 
 /* Tablet responsive for editor */
 @media (max-width: 1024px) {

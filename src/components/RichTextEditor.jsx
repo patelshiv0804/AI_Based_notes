@@ -66,23 +66,61 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
 		calculateMetrics(sanitized);
 	};
 
+	// Apply font size to selection or to whole editor when no selection
+	const applyFontSize = (size) => {
+		const num = parseInt(size, 10);
+		if (!editorRef.current) return;
+		const sel = window.getSelection();
+		if (!sel || sel.rangeCount === 0 || sel.isCollapsed) {
+			// No selection: change whole editor font size
+			setFontSize(size);
+			// update editor display (style is bound to state)
+			return;
+		}
+
+		// There is a selection: wrap selected content in a span with font-size
+		try {
+			const range = sel.getRangeAt(0);
+			const span = document.createElement('span');
+			span.style.fontSize = `${num}px`;
+			// Preserve existing inline formatting by moving the extracted nodes inside span
+			const extracted = range.extractContents();
+			span.appendChild(extracted);
+			range.insertNode(span);
+
+			// Move caret after the inserted span
+			sel.removeAllRanges();
+			const newRange = document.createRange();
+			newRange.setStartAfter(span);
+			newRange.collapse(true);
+			sel.addRange(newRange);
+
+			// Persist changes to note and recalc metrics
+			const sanitized = sanitizeDirectionalMarks(editorRef.current.innerHTML);
+			onUpdateNote({ ...note, content: sanitized });
+			calculateMetrics(sanitized);
+		} catch (err) {
+			console.error('Failed to apply font size to selection', err);
+		}
+	};
+
 	if (note.isEncrypted && !isPasswordVisible) {
 		return (
-			<div className="encrypted-editor" style={{display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%'}}>
-				<div style={{background: 'white', borderRadius: 20, boxShadow: '0 8px 32px rgba(102,126,234,0.10)', padding: 40, maxWidth: 400, width: '100%', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-					<Shield size={56} style={{color: '#667eea', marginBottom: 16}} />
-					<h2 style={{fontSize: 28, fontWeight: 700, color: '#1f2937', marginBottom: 12}}>Protected Note</h2>
-					<p style={{color: '#6b7280', marginBottom: 32, fontSize: 16}}>This note is password protected. Enter the password to view and edit.</p>
-					<div style={{display: 'flex', gap: 12, marginBottom: 0}}>
+			<div className="encrypted-editor">
+				<div className="encryption-overlay">
+					<Shield size={56} className="encryption-icon" />
+					<h3>Protected Note</h3>
+					<p>This note is password protected. Enter the password to view and edit.</p>
+					<div className="password-input-group">
 						<input
 							type="password"
 							value={password}
 							onChange={e => setPassword(e.target.value)}
 							placeholder="Enter password..."
-							style={{flex: 1, padding: '14px 18px', border: '2px solid #e5e7eb', borderRadius: 12, fontSize: 16}}
+							className="password-input unlock-password-input"
 						/>
 						<button
-							style={{display: 'flex', alignItems: 'center', gap: 8, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', borderRadius: 12, border: 'none', fontWeight: 600, fontSize: 16, padding: '14px 28px', cursor: 'pointer'}}
+							className="unlock-btn"
 							onClick={() => {
 								if (password === note.password) {
 									setIsPasswordVisible(true);
@@ -98,7 +136,6 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
 									// Trigger AI analysis for unlocked note
 									AIService.analyzeNote(note.content).then((analysis) => {
 										console.log('AI Analysis:', analysis);
-										// You can update the UI or state with the analysis results here
 									}).catch((error) => {
 										console.error('AI Analysis failed:', error);
 									});
@@ -117,7 +154,7 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
 
 	return (
 		<div className="rich-text-editor">
-			<div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px'}}>
+			<div className="editor-top-header">
 				<input
 					ref={titleRef}
 					className="note-title-input"
@@ -127,25 +164,43 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
 						onUpdateNote({ ...note, title: e.target.value });
 					}}
 					placeholder="Note title..."
-					style={{margin: 0}}
 				/>
-				<button onClick={onToggleEncryption} style={{marginLeft: 16, padding: 12, borderRadius: 12, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', border: 'none'}}>
+				{/* Small edit icon to indicate title is editable */}
+				<button
+					className="note-title-edit-btn"
+					aria-label="Edit title"
+					type="button"
+					onClick={() => {
+						if (titleRef.current) {
+							titleRef.current.focus();
+							const val = titleRef.current.value;
+							titleRef.current.setSelectionRange(val.length, val.length);
+						}
+					}}
+				>
+					{/* inline pencil SVG */}
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+						<path d="M3 21v-3.75L17.81 2.44a1.5 1.5 0 0 1 2.12 0l.63.63a1.5 1.5 0 0 1 0 2.12L5.75 20.0H3z" stroke="#6b7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+						<path d="M14.06 3.94l5.0 5" stroke="#6b7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+					</svg>
+				</button>
+				<button className="encrypt-btn encrypt-toggle">
 					<Shield size={24} />
 				</button>
 			</div>
-			<div className="editor-toolbar" style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '24px 32px', background: '#f8fafc', borderBottom: '1px solid #e5e7eb' }}>
+			<div className="editor-toolbar editor-toolbar--large">
 				<button onClick={() => document.execCommand('bold')}><Bold size={16} /></button>
 				<button onClick={() => document.execCommand('italic')}><Italic size={16} /></button>
 				<button onClick={() => document.execCommand('underline')}><Underline size={16} /></button>
-				<span style={{ height: 32, width: 1, background: '#e5e7eb', margin: '0 12px' }}></span>
+				<span className="toolbar-separator" />
 				<button onClick={() => document.execCommand('justifyLeft')}><AlignLeft size={16} /></button>
 				<button onClick={() => document.execCommand('justifyCenter')}><AlignCenter size={16} /></button>
 				<button onClick={() => document.execCommand('justifyRight')}><AlignRight size={16} /></button>
 				<button onClick={() => document.execCommand('justifyFull')}><AlignJustify size={16} /></button>
-				<span style={{ height: 32, width: 1, background: '#e5e7eb', margin: '0 12px' }}></span>
-				<span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+				<span className="toolbar-separator" />
+				<span className="font-size-control">
 					<Type size={16} />
-					<select value={fontSize} onChange={e => setFontSize(e.target.value)} style={{ padding: '6px 12px', borderRadius: 6, border: '1px solid #e5e7eb' }}>
+					<select value={fontSize} onChange={e => applyFontSize(e.target.value)} className="font-size-select">
 						<option value="8">8px</option>
 						<option value="10">10px</option>
 						<option value="12">12px</option>
@@ -155,7 +210,7 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
 						<option value="20">20px</option>
 					</select>
 				</span>
-				<span style={{ height: 32, width: 1, background: '#e5e7eb', margin: '0 12px' }}></span>
+				<span className="toolbar-separator" />
 				<button onClick={() => document.execCommand('insertOrderedList')}><ListOrdered size={16} /></button>
 				<button onClick={() => document.execCommand('insertUnorderedList')}><List size={16} /></button>
 			</div>
@@ -163,18 +218,16 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
 			<GlossaryHighlighter>
 				<div
 					ref={editorRef}
-					className="note-editor"
+					className={`note-editor fs-${fontSize}`}
 					dir="ltr"
 					contentEditable={(!note.isEncrypted || isPasswordVisible)}
-					style={{ fontSize: `${fontSize}px`, padding: '32px', direction: 'ltr', unicodeBidi: 'plaintext', textAlign: 'left', maxWidth: '52vw' }}
 					onInput={handleInput}
 					suppressContentEditableWarning={true}
 				></div>
 			</GlossaryHighlighter>
-			<div className="editor-metrics" style={{ padding: '10px', background: '#f8fafc', borderTop: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#6b7280' }}>
+			<div className="editor-metrics">
 				<span>Words: {wordCount}</span>
 				<span>Characters: {charCount}</span>
-				{/* <span>Reading Time: {readingTime} min</span> */}
 			</div>
 		</div>
 	);
