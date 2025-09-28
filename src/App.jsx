@@ -94,66 +94,28 @@ function App() {
     <div className="app">
       <div className="main-content">
         <header
-          className="app-header"
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            padding: "20px 30px",
-            background: "white",
-            borderBottom: "1px solid rgba(0,0,0,0.1)",
-            backdropFilter: "blur(10px)",
-          }}
-        >
+          className="app-header">
           <div
             className="header-left"
-            style={{ display: "flex", alignItems: "center", gap: 30 }}
           >
             <div
               className="logo"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-              }}
             >
               <img
                 src={logoImage}
+                className="logo-image"
                 alt="Neura Notes Logo"
-                style={{ width: 45, height: 45 }}
               />
-              <h1
-                style={{
-                  fontSize: 28,
-                  fontWeight: 700,
-                  background:
-                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                  margin: 0,
-                }}
-              >
+              <h1>
                 Neura Notes
               </h1>
             </div>
             <div
               className="search-container"
-              style={{
-                position: "relative",
-                display: "flex",
-                alignItems: "center",
-              }}
             >
               <Search
                 className="search-icon"
                 size={20}
-                style={{
-                  position: "absolute",
-                  left: 12,
-                  color: "#9ca3af",
-                  zIndex: 1,
-                }}
               />
               <input
                 type="text"
@@ -161,22 +123,12 @@ function App() {
                 placeholder="Search notes..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                style={{
-                  padding: "12px 40px",
-                  border: "2px solid #e5e7eb",
-                  borderRadius: 12,
-                  fontSize: 14,
-                  width: 300,
-                  transition: "all 0.2s",
-                  background: "rgba(255,255,255,0.9)",
-                }}
               />
             </div>
           </div>
           <div
             className="header-right"
-            style={{ display: "flex", alignItems: "center", gap: 24 }}
-          >
+         >
             {/* <button
 							style={{display: 'flex', alignItems: 'center', gap: 10, background: 'white', borderRadius: 16, boxShadow: '0 4px 24px rgba(102,126,234,0.10)', border: 'none', padding: '16px 28px', fontWeight: 600, fontSize: 16, color: '#374151', cursor: 'pointer'}}
 							onClick={() => setShowAIPanel(true)}
@@ -187,22 +139,7 @@ function App() {
             <button
               className="new-note-btn"
               onClick={createNewNote}
-              title="New Note"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 10,
-                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                color: "white",
-                borderRadius: 16,
-                border: "none",
-                fontWeight: 600,
-                fontSize: 18,
-                padding: "16px 32px",
-                boxShadow: "0 4px 24px rgba(102,126,234,0.10)",
-                cursor: "pointer",
-              }}
-            >
+              title="New Note">
               <Plus size={24} />
               New Note
             </button>

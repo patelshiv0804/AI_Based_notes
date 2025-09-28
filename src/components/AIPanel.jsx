@@ -24,10 +24,10 @@ function AIPanel({ note, onUpdateNote }) {
 		{ code: 'zh', name: 'Chinese' },
 		{ code: 'ar', name: 'Arabic' },
 		{ code: 'ru', name: 'Russian' },
-		{ code: 'ja', name: 'Japanese' },
+		// { code: 'ja', name: 'Japanese' },
 		{ code: 'ko', name: 'Korean' },
 		{ code: 'bn', name: 'Bengali' },
-		{ code: 'pa', name: 'Punjabi' },
+		// { code: 'pa', name: 'Punjabi' },
 		{ code: 'tr', name: 'Turkish' }
 	];
 

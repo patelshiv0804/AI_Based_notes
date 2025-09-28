@@ -30,7 +30,7 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
 		if (editorRef.current && !note.isEncrypted) {
 			editorRef.current.innerHTML = sanitizeDirectionalMarks(note.content);
 		}
-	}, [note.id, note.isEncrypted]);
+	}, [note.id, note.isEncrypted, note.content]);
 
 	const calculateMetrics = (content) => {
 		const plainText = content.replace(/<[^>]*>/g, '').trim();
