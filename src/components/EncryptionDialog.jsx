@@ -87,7 +87,7 @@ function EncryptionDialog({ note, onUpdateNote, onClose }) {
 						<div className="encrypt-form">
 							<div className="info-box">
 								<Shield size={20} />
-								<p>Encrypt this note with a password. You'll need to enter this password to view and edit the note.</p>
+								<p>Protect this note with a password. You'll need to enter this password to view and edit the note.</p>
 							</div>
 							<div className="form-group">
 								<label>Password:</label>
@@ -130,7 +130,7 @@ function EncryptionDialog({ note, onUpdateNote, onClose }) {
 									disabled={!password || password !== confirmPassword}
 								>
 									<Lock size={16} />
-									Encrypt Note
+									Protect Note
 								</button>
 							</div>
 						</div>

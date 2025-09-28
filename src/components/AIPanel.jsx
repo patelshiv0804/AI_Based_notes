@@ -109,10 +109,10 @@ function AIPanel({ note, onUpdateNote }) {
 					<div className="ai-section disabled-section">
 						<div className="section-header">
 							<FileText size={20} />
-							<h4>Encrypted Note</h4>
+							<h4>Protected Note</h4>
 						</div>
 						<div className="disabled-content">
-							<p>AI features are not available for encrypted notes. Unlock the note to access AI assistance.</p>
+							<p>AI features are not available for protected notes. Unlock the note to access AI assistance.</p>
 						</div>
 					</div>
 				</div>
