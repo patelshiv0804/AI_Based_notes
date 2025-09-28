@@ -1,8 +1,16 @@
 .rich-text-editor {
   display: flex;
   flex-direction: column;
-  /* height: 100%; */
+  height: 100%; /* fill available vertical space so inner editor can scroll */
+  min-height: 0; /* allow flex children to shrink and enable scrolling */
   background: white;
+}
+
+/* Ensure parent layout containers allow flex children to scroll when used alongside this stylesheet */
+.top-editor-section,
+.editor-section,
+.content-area {
+  min-height: 0;
 }
 
 .editor-header {
@@ -135,12 +143,13 @@
 .editor-content {
   flex: 1;
   position: relative;
-  overflow: hidden;
+  overflow-y: auto; /* Ensure vertical scrolling */
+  max-height: 100%; /* Prevent overflow beyond parent */
 }
 
 .editor-area {
   width: 100%;
-  height: 100%;
+  height: auto; /* Adjust height dynamically */
   padding: 30px;
   border: none;
   outline: none;
@@ -148,8 +157,8 @@
   line-height: 1.7;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
   color: #1f2937;
-  overflow-y: auto;
   background: white;
+  overflow-y: auto; /* Ensure scrolling within the editor area */
 }
 
 /* Ensure contenteditable editor text is not reversed */
@@ -157,6 +166,9 @@
   direction: ltr !important;
   unicode-bidi: plaintext !important;
   text-align: left !important;
+  flex: 1 1 auto; /* allow the editor to grow/shrink inside the column layout */
+  overflow-y: auto; /* enable inner scrolling for long content */
+  min-height: 0; /* allow proper flexbox overflow behavior */
 }
 
 .editor-area:focus {

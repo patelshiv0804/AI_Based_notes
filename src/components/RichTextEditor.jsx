@@ -174,7 +174,7 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
 			<div className="editor-metrics" style={{ padding: '10px', background: '#f8fafc', borderTop: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#6b7280' }}>
 				<span>Words: {wordCount}</span>
 				<span>Characters: {charCount}</span>
-				<span>Reading Time: {readingTime} min</span>
+				{/* <span>Reading Time: {readingTime} min</span> */}
 			</div>
 		</div>
 	);

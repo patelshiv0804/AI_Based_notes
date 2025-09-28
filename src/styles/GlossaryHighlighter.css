@@ -1,5 +1,6 @@
 .glossary-container {
   position: relative;
+  overflow-y: scroll;
 }
 
 .glossary-term {
