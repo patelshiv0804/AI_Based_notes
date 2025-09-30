@@ -16,6 +16,7 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
 	const editorRef = useRef(null);
 	const titleRef = useRef(null);
 	const isUserTypingRef = useRef(false);
+	// Timeout for debouncing user typing
 	const typingTimeoutRef = useRef(null);
 
 	// Remove hidden bidi control characters that can reverse typing order
@@ -24,6 +25,12 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
 		// LRM/LRM, RLM, LRE/RLE/PDF, LRO/RLO, isolate marks, etc.
 		const BIDI_REGEX = /[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g;
 		return html.replace(BIDI_REGEX, '');
+	};
+
+	// Normalize non-breaking spaces (HTML entity and unicode) to regular spaces
+	const normalizeNbsp = (html) => {
+		if (typeof html !== 'string') return html;
+		return html.replace(/&nbsp;|\u00A0/g, ' ');
 	};
 
 	useEffect(() => {
@@ -42,7 +49,8 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
 			!isUserTypingRef.current &&
 			document.activeElement !== editorRef.current
 		) {
-			editorRef.current.innerHTML = sanitizeDirectionalMarks(note.content);
+			// sanitize directional marks and normalize NBSPs before loading into editor
+			editorRef.current.innerHTML = normalizeNbsp(sanitizeDirectionalMarks(note.content));
 		}
 	}, [note.id, note.isEncrypted, note.content]);
 
@@ -69,21 +77,13 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
 			isUserTypingRef.current = false;
 		}, 300);
 		if (!editorRef.current) return;
-		const sanitized = sanitizeDirectionalMarks(editorRef.current.innerHTML);
-		if (sanitized !== editorRef.current.innerHTML) {
-			editorRef.current.innerHTML = sanitized;
-			// Move caret to end after sanitizing
-			const range = document.createRange();
-			range.selectNodeContents(editorRef.current);
-			range.collapse(false);
-			const sel = window.getSelection();
-			if (sel) {
-				sel.removeAllRanges();
-				sel.addRange(range);
-			}
-		}
-		onUpdateNote({ ...note, content: sanitized });
-		calculateMetrics(sanitized);
+		// Don't rewrite the editor DOM here (it can break caret/IME, and caused spaces to disappear).
+		// Instead, compute a sanitized version for persisting and metrics, but let the browser
+		// keep the DOM as-is while the user types.
+		const currentHTML = editorRef.current.innerHTML;
+		const sanitizedForSave = normalizeNbsp(sanitizeDirectionalMarks(currentHTML));
+		onUpdateNote({ ...note, content: sanitizedForSave });
+		calculateMetrics(sanitizedForSave);
 	};
 
 	// Apply font size to selection or to whole editor when no selection
@@ -116,7 +116,7 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
 			sel.addRange(newRange);
 
 			// Persist changes to note and recalc metrics
-			const sanitized = sanitizeDirectionalMarks(editorRef.current.innerHTML);
+			const sanitized = normalizeNbsp(sanitizeDirectionalMarks(editorRef.current.innerHTML));
 			onUpdateNote({ ...note, content: sanitized });
 			calculateMetrics(sanitized);
 		} catch (err) {
@@ -149,7 +149,7 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
 									// Restore note content in editor
 									setTimeout(() => {
 										if (editorRef.current) {
-											editorRef.current.innerHTML = note.content;
+											editorRef.current.innerHTML = normalizeNbsp(sanitizeDirectionalMarks(note.content));
 										}
 									}, 0);
 
