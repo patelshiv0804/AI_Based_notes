@@ -175,14 +175,13 @@
 
 .note-editor {
   direction: ltr !important;
-  unicode-bidi: plaintext !important;
+  unicode-bidi: isolate !important;
   text-align: left !important;
-  flex: 1 1 auto; 
-  overflow-y: auto; 
-  min-height: 0;
+  flex: 1 1 auto; /* allow the editor to grow/shrink inside the column layout */
+  overflow-y: auto; /* enable inner scrolling for long content */
+  min-height: 0; /* allow proper flexbox overflow behavior */
   padding: 32px;
   max-width: 52vw;
-  height: 100vh;
 }
 
 .editor-area:focus {

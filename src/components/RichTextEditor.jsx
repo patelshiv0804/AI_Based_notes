@@ -15,6 +15,8 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
 	const [readingTime, setReadingTime] = useState(0);
 	const editorRef = useRef(null);
 	const titleRef = useRef(null);
+	const isUserTypingRef = useRef(false);
+	const typingTimeoutRef = useRef(null);
 
 	// Remove hidden bidi control characters that can reverse typing order
 	const sanitizeDirectionalMarks = (html) => {
@@ -27,7 +29,19 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
 	useEffect(() => {
 		setTitle(note.title);
 		setIsPasswordVisible(!note.isEncrypted);
-		if (editorRef.current && !note.isEncrypted) {
+		if (editorRef.current) {
+			// always ensure explicit LTR attributes on the DOM node
+			editorRef.current.setAttribute('dir', 'ltr');
+			editorRef.current.style.unicodeBidi = 'isolate';
+			editorRef.current.style.direction = 'ltr';
+		}
+		// Only update the editor content from external changes when the user is not typing
+		if (
+			editorRef.current &&
+			!note.isEncrypted &&
+			!isUserTypingRef.current &&
+			document.activeElement !== editorRef.current
+		) {
 			editorRef.current.innerHTML = sanitizeDirectionalMarks(note.content);
 		}
 	}, [note.id, note.isEncrypted, note.content]);
@@ -48,6 +62,12 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
 
 	// Update metrics dynamically as user types
 	const handleInput = () => {
+		// mark that user is typing to avoid external updates overwriting the DOM
+		isUserTypingRef.current = true;
+		if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+		typingTimeoutRef.current = setTimeout(() => {
+			isUserTypingRef.current = false;
+		}, 300);
 		if (!editorRef.current) return;
 		const sanitized = sanitizeDirectionalMarks(editorRef.current.innerHTML);
 		if (sanitized !== editorRef.current.innerHTML) {
