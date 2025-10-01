@@ -204,7 +204,13 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
 						<path d="M14.06 3.94l5.0 5" stroke="#6b7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
 					</svg>
 				</button>
-				<button className="encrypt-btn encrypt-toggle">
+				<button
+					className="encrypt-btn encrypt-toggle"
+					type="button"
+					onClick={() => {
+						if (typeof onToggleEncryption === 'function') onToggleEncryption();
+					}}
+				>
 					<Shield size={24} />
 				</button>
 			</div>

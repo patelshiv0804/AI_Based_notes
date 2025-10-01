@@ -278,6 +278,37 @@
   transform: translateY(-2px) scale(1.04);
 }
 
+/* Unlock button used in the encrypted overlay */
+.unlock-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 2px solid #e5e7eb;
+  background: white;
+  color: #111827;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+
+.unlock-btn svg {
+  color: #111827;
+}
+
+.unlock-btn:hover {
+  border-color: #667eea;
+  color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(102,126,234,0.08);
+}
+
+.unlock-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(102,126,234,0.08);
+}
+
 .note-title-edit-btn {
   margin-left: 8px;
   padding: 8px;
