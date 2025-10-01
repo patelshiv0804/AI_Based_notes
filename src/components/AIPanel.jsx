@@ -60,14 +60,8 @@ function AIPanel({ note, onUpdateNote }) {
 	const applySuggestedTags = async () => {
 		// Make a copy of the current note and update its tags
 		if (note.isEncrypted) return;
-		const updatedNote = { 
-			...note,
-			tags: [...(Array.isArray(suggestedTags) ? suggestedTags : [])],
-			updatedAt: new Date().toISOString() // Update the timestamp
-		};
-		
-		// Call onUpdateNote with the updated note
-		onUpdateNote(updatedNote);
+		// Send only the changed fields; parent will merge and set updatedAt
+		onUpdateNote({ id: note.id, tags: [...(Array.isArray(suggestedTags) ? suggestedTags : [])] });
 	};
 
 	const translateNote = async () => {
@@ -83,15 +77,12 @@ function AIPanel({ note, onUpdateNote }) {
 			console.log('Translated content:', translatedContent); // Debug
 			
 			if (translatedContent && translatedContent !== plainContent) {
-				onUpdateNote({ 
-					...note, 
-					content: translatedContent 
-				});
+				// Only send the changed content; parent will merge and set updatedAt
+				onUpdateNote({ id: note.id, content: translatedContent });
 			}
 		} catch (e) {
 			console.error('Translation failed:', e);
-			// Keep original content on error
-			onUpdateNote({ ...note });
+			// Do not overwrite note on error; no-op
 		}
 		setIsGenerating(false);
 	};

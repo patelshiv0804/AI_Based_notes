@@ -72,8 +72,68 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
   }, [note.id, note.isEncrypted, note.content]);
 
   const calculateMetrics = (content) => {
-    const plainText = content.replace(/<[^>]*>/g, "").trim();
-    const words = plainText.split(/\s+/).filter((word) => word.length > 0);
+    if (typeof content !== "string" || content.length === 0) {
+      setWordCount(0);
+      setCharCount(0);
+      setReadingTime(0);
+      return;
+    }
+
+    // Normalize and sanitize first (handles &nbsp; and bidi marks)
+    const sanitizedHtml = normalizeNbsp(sanitizeDirectionalMarks(content));
+
+    // Use the browser's HTML parser to decode entities and extract text
+    // but ensure block-level elements act as word separators. Some browsers
+    // collapse adjacent block text without space which makes words join
+    // when user presses Enter. We'll walk the DOM and insert spaces around
+    // block elements when building the plain string.
+    const temp = document.createElement("div");
+    temp.innerHTML = sanitizedHtml;
+
+    const BLOCK_TAGS = new Set([
+      "DIV",
+      "P",
+      "BR",
+      "LI",
+      "SECTION",
+      "ARTICLE",
+      "HEADER",
+      "FOOTER",
+      "BLOCKQUOTE",
+      "H1",
+      "H2",
+      "H3",
+      "H4",
+      "H5",
+      "H6"
+    ]);
+
+    const parts = [];
+    function walk(node) {
+      if (!node) return;
+      if (node.nodeType === Node.TEXT_NODE) {
+        parts.push(node.nodeValue);
+        return;
+      }
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        const tag = node.tagName;
+        const isBlock = BLOCK_TAGS.has(tag);
+        if (isBlock) parts.push(" ");
+        // Recurse children
+        for (let i = 0; i < node.childNodes.length; i++) {
+          walk(node.childNodes[i]);
+        }
+        if (isBlock) parts.push(" ");
+        return;
+      }
+      // ignore other node types
+    }
+
+    walk(temp);
+    const plainText = parts.join("").replace(/\s+/gu, " ").trim();
+
+    // Split on any unicode whitespace sequence
+    const words = plainText.length === 0 ? [] : plainText.split(/\s+/u).filter(Boolean);
     setWordCount(words.length);
     setCharCount(plainText.length);
     setReadingTime(Math.ceil(words.length / 200)); // Assuming 200 words per minute
@@ -101,7 +161,12 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
     const sanitizedForSave = normalizeNbsp(
       sanitizeDirectionalMarks(currentHTML)
     );
-    onUpdateNote({ ...note, content: sanitizedForSave });
+    // Send only the fields that changed. The parent will merge this update
+    // with the existing note. Avoid converting dates to strings here.
+    onUpdateNote({
+      id: note.id,
+      content: sanitizedForSave,
+    });
     calculateMetrics(sanitizedForSave);
   };
 
@@ -209,7 +274,8 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
           value={title}
           onChange={(e) => {
             setTitle(e.target.value);
-            onUpdateNote({ ...note, title: e.target.value });
+            // Only send changed fields; parent will merge and update timestamp
+            onUpdateNote({ id: note.id, title: e.target.value });
           }}
           placeholder="Note title..."
         />

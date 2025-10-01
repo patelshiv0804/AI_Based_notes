@@ -42,13 +42,18 @@ function App() {
   };
 
   const updateNote = (updatedNote) => {
-    const updatedNotes = notes.map((note) =>
-      note.id === updatedNote.id
-        ? { ...updatedNote, updatedAt: new Date() }
-        : note
-    );
+    // Merge the incoming partial update with the existing note to avoid
+    // accidentally wiping properties like isPinned, tags, etc.
+    const updatedNotes = notes.map((n) => {
+      if (n.id === updatedNote.id) {
+        const merged = { ...n, ...updatedNote, updatedAt: new Date() };
+        return merged;
+      }
+      return n;
+    });
     setNotes(updatedNotes);
-    setActiveNote(updatedNote);
+    const newActive = updatedNotes.find((n) => n.id === updatedNote.id) || null;
+    setActiveNote(newActive);
     StorageService.saveNotes(updatedNotes);
   };
 
