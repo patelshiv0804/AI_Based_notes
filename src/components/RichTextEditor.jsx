@@ -79,14 +79,8 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
       return;
     }
 
-    // Normalize and sanitize first (handles &nbsp; and bidi marks)
     const sanitizedHtml = normalizeNbsp(sanitizeDirectionalMarks(content));
 
-    // Use the browser's HTML parser to decode entities and extract text
-    // but ensure block-level elements act as word separators. Some browsers
-    // collapse adjacent block text without space which makes words join
-    // when user presses Enter. We'll walk the DOM and insert spaces around
-    // block elements when building the plain string.
     const temp = document.createElement("div");
     temp.innerHTML = sanitizedHtml;
 

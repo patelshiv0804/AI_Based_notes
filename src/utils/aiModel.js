@@ -3,47 +3,52 @@ export async function translateNote(noteContent, targetLanguage) {
   try {
     // Map language codes to full language names for better AI understanding
     const languageMap = {
-      'en': 'English',
-      'hi': 'Hindi',
-      'es': 'Spanish',
-      'fr': 'French',
-      'de': 'German',
-      'it': 'Italian',
-      'pt': 'Portuguese',
-      'zh': 'Chinese (Simplified)',
-      'ar': 'Arabic',
-      'ru': 'Russian',
-      'ja': 'Japanese',
-      'ko': 'Korean',
-      'bn': 'Bengali',
-      'pa': 'Punjabi',
-      'tr': 'Turkish'
+      en: "English",
+      hi: "Hindi",
+      es: "Spanish",
+      fr: "French",
+      de: "German",
+      it: "Italian",
+      pt: "Portuguese",
+      zh: "Chinese (Simplified)",
+      ar: "Arabic",
+      ru: "Russian",
+      ja: "Japanese",
+      ko: "Korean",
+      bn: "Bengali",
+      pa: "Punjabi",
+      tr: "Turkish",
     };
 
     const targetLangName = languageMap[targetLanguage] || targetLanguage;
-    const systemPrompt = `You are a professional translator. Your task is to translate the following text into ${targetLangName}. 
-    Instructions:
-    - Translate the complete text accurately while maintaining the original meaning
-    - Preserve any technical terms or proper nouns
-    - Return ONLY the translated text
-    - Do not include any explanations, notes, or formatting
-    - Keep the tone and style consistent with the original`;
+    const systemPrompt = `You are an expert translator and localization specialist. Translate the following text into ${targetLangName} with fluent, natural, and idiomatic language while preserving the original meaning, tone, and formality.
+
+    Rules:
+      - Return ONLY the translated text. Do not add explanations, annotations, examples, or formatting notes.
+      - Preserve technical terms, proper nouns, numbers, dates, code snippets, placeholders (e.g. {{name}}), markdown, and HTML tags exactly as they appear unless explicitly instructed to change them.
+      - Keep paragraph and line-break boundaries as natural separators for translation; treat each block independently but preserve overall flow.
+      - Prefer natural, idiomatic phrasing over literal word-for-word rendering.
+      - Detect the source language automatically if not provided.
+      - If a phrase is ambiguous, choose the most likely natural interpretation without inventing facts.
+      - If you cannot translate a portion (e.g., an unknown token), copy it verbatim into the output.
+
+      Now translate the user content exactly as instructed:`;
     const body = {
       model: "llama-3.1-8b-instant",
       messages: [
         { role: "system", content: systemPrompt },
-        { role: "user", content: noteContent }
+        { role: "user", content: noteContent },
       ],
       temperature: 0.7,
-      max_tokens: 2000
+      max_tokens: 2000,
     };
     const response = await fetch(GROQ_API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${GROQ_API_KEY}`
+        Authorization: `Bearer ${GROQ_API_KEY}`,
       },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
     });
     if (!response.ok) {
       throw new Error("Groq API error: " + response.statusText);
@@ -58,7 +63,6 @@ export async function translateNote(noteContent, targetLanguage) {
   }
 }
 
-// Helper to call Groq API using fetch
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
 
@@ -105,19 +109,22 @@ export async function analyzeNote(noteContent) {
       model: "llama-3.1-8b-instant",
       messages: [
         { role: "system", content: systemPrompt },
-        { role: "user", content: `Please analyze this note and provide a complete analysis: ${noteContent}` }
+        {
+          role: "user",
+          content: `Please analyze this note and provide a complete analysis: ${noteContent}`,
+        },
       ],
       temperature: 0.7,
-      max_tokens: 2000
+      max_tokens: 2000,
     };
 
     const response = await fetch(GROQ_API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${GROQ_API_KEY}`
+        Authorization: `Bearer ${GROQ_API_KEY}`,
       },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {
@@ -133,16 +140,16 @@ export async function analyzeNote(noteContent) {
       summary: result.summary || "No summary available",
       tags: result.tags || [],
       insights: [],
-      grammarIssues: (result.grammarIssues || []).map(issue => ({
+      grammarIssues: (result.grammarIssues || []).map((issue) => ({
         text: issue.text,
         issue: issue.type,
         suggestion: issue.suggestion,
-        explanation: issue.explanation
+        explanation: issue.explanation,
       })),
-      glossary: (result.glossary || []).map(item => ({
+      glossary: (result.glossary || []).map((item) => ({
         term: item.term,
-        definition: item.definition
-      }))
+        definition: item.definition,
+      })),
     };
   } catch (error) {
     console.error("Error analyzing note:", error);
@@ -151,7 +158,7 @@ export async function analyzeNote(noteContent) {
       tags: [],
       insights: [],
       grammarIssues: [],
-      glossary: []
+      glossary: [],
     };
   }
 }
@@ -160,18 +167,16 @@ export async function testAIConnection() {
   try {
     const body = {
       model: "llama-3.1-8b-instant",
-      messages: [
-        { role: "user", content: "Respond with just: OK" }
-      ],
-      max_tokens: 10
+      messages: [{ role: "user", content: "Respond with just: OK" }],
+      max_tokens: 10,
     };
     const response = await fetch(GROQ_API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${GROQ_API_KEY}`
+        Authorization: `Bearer ${GROQ_API_KEY}`,
       },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
     });
     if (!response.ok) return false;
     const data = await response.json();
