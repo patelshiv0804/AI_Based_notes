@@ -89,6 +89,8 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
       "P",
       "BR",
       "LI",
+      "OL",
+      "UL",
       "SECTION",
       "ARTICLE",
       "HEADER",
@@ -99,7 +101,7 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
       "H3",
       "H4",
       "H5",
-      "H6"
+      "H6",
     ]);
 
     const parts = [];
@@ -127,7 +129,8 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
     const plainText = parts.join("").replace(/\s+/gu, " ").trim();
 
     // Split on any unicode whitespace sequence
-    const words = plainText.length === 0 ? [] : plainText.split(/\s+/u).filter(Boolean);
+    const words =
+      plainText.length === 0 ? [] : plainText.split(/\s+/u).filter(Boolean);
     setWordCount(words.length);
     setCharCount(plainText.length);
     setReadingTime(Math.ceil(words.length / 200)); // Assuming 200 words per minute
@@ -201,6 +204,45 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
       calculateMetrics(sanitized);
     } catch (err) {
       console.error("Failed to apply font size to selection", err);
+    }
+  };
+
+  // Handle list commands (ordered and unordered lists)
+  const handleListCommand = (command) => {
+    if (!editorRef.current) return;
+    editorRef.current.focus();
+
+    const selection = window.getSelection();
+    // If no selection or empty editor, ensure there's a paragraph to insert into
+    if (
+      !selection ||
+      selection.rangeCount === 0 ||
+      editorRef.current.innerHTML.trim() === "" ||
+      editorRef.current.innerHTML === "<br>"
+    ) {
+      editorRef.current.innerHTML = "<p><br></p>";
+      const range = document.createRange();
+      const paragraph = editorRef.current.querySelector("p");
+      if (paragraph) {
+        range.setStart(paragraph, 0);
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+    }
+
+    try {
+      document.execCommand(command, false, null);
+      // Persist change and update metrics (allow DOM update to settle)
+      setTimeout(() => {
+        const sanitized = normalizeNbsp(
+          sanitizeDirectionalMarks(editorRef.current.innerHTML)
+        );
+        onUpdateNote({ ...note, content: sanitized });
+        calculateMetrics(sanitized);
+      }, 0);
+    } catch (err) {
+      console.error(`Failed to execute ${command}:`, err);
     }
   };
 
@@ -362,39 +404,10 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
           </select>
         </span>
         <span className="toolbar-separator" />
-        {/* <button onClick={() => document.execCommand('insertOrderedList')}><ListOrdered size={16} /></button>
-				<button onClick={() => document.execCommand('insertUnorderedList')}><List size={16} /></button> */}
-        <button
-          onClick={() => {
-            if (!editorRef.current) return;
-            const sel = window.getSelection();
-            if (!sel || sel.rangeCount === 0) {
-              editorRef.current.focus();
-            }
-            // Ensure there is at least one block element
-            if (editorRef.current.innerHTML.trim() === "") {
-              editorRef.current.innerHTML = "<p><br></p>";
-            }
-            document.execCommand("insertOrderedList");
-          }}
-        >
+        <button onClick={() => handleListCommand("insertOrderedList")}>
           <ListOrdered size={16} />
         </button>
-
-        <button
-          onClick={() => {
-            if (!editorRef.current) return;
-            const sel = window.getSelection();
-            if (!sel || sel.rangeCount === 0) {
-              editorRef.current.focus();
-            }
-            // Ensure there is at least one block element
-            if (editorRef.current.innerHTML.trim() === "") {
-              editorRef.current.innerHTML = "<p><br></p>";
-            }
-            document.execCommand("insertUnorderedList");
-          }}
-        >
+        <button onClick={() => handleListCommand("insertUnorderedList")}>
           <List size={16} />
         </button>
       </div>

@@ -6,7 +6,7 @@ import AIPanel from "./components/AIPanel.jsx";
 import EncryptionDialog from "./components/EncryptionDialog.jsx";
 import StorageService from "./services/StorageService.js";
 import AIService from "./services/AIService.js";
-import logoImage from "./Logo/neura_notes_logo.png"; // Import the provided logo image
+import logoImage from "./Logo/neura_notes_logo.png";
 import "./styles/App.css";
 
 function App() {
@@ -18,7 +18,6 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Load notes from storage
     const savedNotes = StorageService.getNotes();
     setNotes(savedNotes);
     setIsLoading(false);
@@ -98,30 +97,18 @@ function App() {
   return (
     <div className="app">
       <div className="main-content">
-        <header
-          className="app-header">
-          <div
-            className="header-left"
-          >
-            <div
-              className="logo"
-            >
+        <header className="app-header">
+          <div className="header-left">
+            <div className="logo">
               <img
                 src={logoImage}
                 className="logo-image"
                 alt="Neura Notes Logo"
               />
-              <h1>
-                Neura Notes
-              </h1>
+              <h1>Neura Notes</h1>
             </div>
-            <div
-              className="search-container"
-            >
-              <Search
-                className="search-icon"
-                size={20}
-              />
+            <div className="search-container">
+              <Search className="search-icon" size={20} />
               <input
                 type="text"
                 className="search-input"
@@ -131,9 +118,7 @@ function App() {
               />
             </div>
           </div>
-          <div
-            className="header-right"
-         >
+          <div className="header-right">
             {/* <button
 							style={{display: 'flex', alignItems: 'center', gap: 10, background: 'white', borderRadius: 16, boxShadow: '0 4px 24px rgba(102,126,234,0.10)', border: 'none', padding: '16px 28px', fontWeight: 600, fontSize: 16, color: '#374151', cursor: 'pointer'}}
 							onClick={() => setShowAIPanel(true)}
@@ -144,51 +129,13 @@ function App() {
             <button
               className="new-note-btn"
               onClick={createNewNote}
-              title="New Note">
+              title="New Note"
+            >
               <Plus size={24} />
               New Note
             </button>
           </div>
         </header>
-        {/* <div className="content-area" style={{height: 'calc(100vh - 80px)', display: 'flex', flexDirection: 'row', width: '100%'}}>
-							<div className="notes-section" style={{background: 'transparent', borderRight: 'none', minWidth: 320}}>
-								<NotesList
-									notes={sortedNotes}
-									activeNote={activeNote}
-									onSelectNote={setActiveNote}
-									onDeleteNote={deleteNote}
-									onTogglePin={togglePin}
-								/>
-							</div>
-							<div className="editor-section" style={{background: 'transparent', borderLeft: 'none', flex: 1}}>
-								{activeNote ? (
-									<RichTextEditor
-										note={activeNote}
-										onUpdateNote={updateNote}
-										onToggleEncryption={() => setShowEncryption(true)}
-									/>
-								) : (
-									<div className="empty-editor">
-										<div className="empty-content">
-											<button className="create-note-btn" onClick={createNewNote}>
-												<Plus size={48} />
-											</button>
-											<h3>Start Writing</h3>
-											<p>Create a new note or select an existing one to begin editing</p>
-										</div>
-									</div>
-								)}
-							</div>
-							
-							<div style={{minWidth: 350, maxWidth: 400, height: '100%'}}>
-								{activeNote && (
-									<AIPanel
-										note={activeNote}
-										onUpdateNote={updateNote}
-									/>
-								)}
-							</div>
-						</div> */}
 
         <div className="content-area">
           <div className="notes-section">
