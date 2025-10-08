@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pin, Trash2, Calendar, Lock } from 'lucide-react';
 import '../styles/NotesList.css';
 

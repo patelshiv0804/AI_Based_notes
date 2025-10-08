@@ -75,7 +75,7 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
     if (typeof content !== "string" || content.length === 0) {
       setWordCount(0);
       setCharCount(0);
-      setReadingTime(0);
+     
       return;
     }
 
@@ -269,9 +269,8 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
               onClick={() => {
                 if (password === note.password) {
                   setIsPasswordVisible(true);
-                  onUpdateNote({ ...note, isEncrypted: false }); // Update note state to unlocked
+                  onUpdateNote({ ...note, isEncrypted: false }); 
 
-                  // Restore note content in editor
                   setTimeout(() => {
                     if (editorRef.current) {
                       editorRef.current.innerHTML = normalizeNbsp(
@@ -280,7 +279,6 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
                     }
                   }, 0);
 
-                  // Trigger AI analysis for unlocked note
                   AIService.analyzeNote(note.content)
                     .then((analysis) => {
                       console.log("AI Analysis:", analysis);
@@ -310,7 +308,6 @@ function RichTextEditor({ note, onUpdateNote, onToggleEncryption }) {
           value={title}
           onChange={(e) => {
             setTitle(e.target.value);
-            // Only send changed fields; parent will merge and update timestamp
             onUpdateNote({ id: note.id, title: e.target.value });
           }}
           placeholder="Note title..."

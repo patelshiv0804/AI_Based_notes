@@ -1,7 +1,5 @@
-// Translate note using Groq API
 export async function translateNote(noteContent, targetLanguage) {
   try {
-    // Map language codes to full language names for better AI understanding
     const languageMap = {
       en: "English",
       hi: "Hindi",
@@ -18,7 +16,7 @@ export async function translateNote(noteContent, targetLanguage) {
       bn: "Bengali",
       pa: "Punjabi",
       tr: "Turkish",
-    };
+    } ;
 
     const targetLangName = languageMap[targetLanguage] || targetLanguage;
     const systemPrompt = `You are an expert translator and localization specialist. Translate the following text into ${targetLangName} with fluent, natural, and idiomatic language while preserving the original meaning, tone, and formality.

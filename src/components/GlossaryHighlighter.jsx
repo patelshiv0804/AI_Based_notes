@@ -1,5 +1,3 @@
-
-// GlossaryHighlighter.jsx rewritten to match .tsx logic and structure
 import React, { useEffect, useRef, useState } from 'react';
 import AIService from '../services/AIService.js';
 import '../styles/GlossaryHighlighter.css';

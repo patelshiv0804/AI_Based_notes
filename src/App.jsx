@@ -3,9 +3,9 @@ import { Search, Plus, Settings, Brain, Shield, Pin } from "lucide-react";
 import RichTextEditor from "./components/RichTextEditor.jsx";
 import NotesList from "./components/NotesList.jsx";
 import AIPanel from "./components/AIPanel.jsx";
-import EncryptionDialog from "./components/EncryptionDialog.jsx";
+import EncryptionDialog from "./components/ProtectionDialog.jsx";
 import StorageService from "./services/StorageService.js";
-import AIService from "./services/AIService.js";
+// import AIService from "./services/AIService.js";
 import logoImage from "./Logo/neura_notes_logo.png";
 import "./styles/App.css";
 
@@ -13,7 +13,7 @@ function App() {
   const [notes, setNotes] = useState([]);
   const [activeNote, setActiveNote] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [showAIPanel, setShowAIPanel] = useState(false);
+  // const [showAIPanel, setShowAIPanel] = useState(false);
   const [showEncryption, setShowEncryption] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -41,8 +41,6 @@ function App() {
   };
 
   const updateNote = (updatedNote) => {
-    // Merge the incoming partial update with the existing note to avoid
-    // accidentally wiping properties like isPinned, tags, etc.
     const updatedNotes = notes.map((n) => {
       if (n.id === updatedNote.id) {
         const merged = { ...n, ...updatedNote, updatedAt: new Date() };

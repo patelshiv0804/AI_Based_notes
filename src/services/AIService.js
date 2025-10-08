@@ -29,7 +29,7 @@ const AIService = {
 			};
 		} catch (error) {
 			console.error("AI analysis failed:", error);
-			// Fallback summary
+			
 			const plain = content.replace(/<[^>]+>/g, " ");
 			const firstSentence = plain.split(/[.!?](\s|$)/)[0];
 			return {
